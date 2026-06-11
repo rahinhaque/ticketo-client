@@ -82,6 +82,7 @@ const LoginPage = () => {
               startContent={<FaEnvelope className="text-slate-400 text-sm" />}
               className="w-full bg-slate-900/50 border-white/10 hover:border-pink-500/50 focus-within:!border-pink-500"
             />
+            {errors.email && <span className="text-red-500">{errors.email.message}</span>}
             <Label htmlFor="password">Password</Label>
             <Input
               {...register("password", { required: true })}
@@ -92,6 +93,7 @@ const LoginPage = () => {
               startContent={<FaLock className="text-slate-400 text-sm" />}
               className="w-full bg-slate-900/50 border-white/10 hover:border-pink-500/50 focus-within:!border-pink-500"
             />
+            {errors.password && <span className="text-red-500">{errors.password.message}</span>}
 
             <Button
               type="submit"
