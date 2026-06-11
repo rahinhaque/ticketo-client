@@ -73,7 +73,7 @@ const onSubmit = async (data) => {
 
   // 3. This will now work perfectly without crashing
   if (isSuccess) {
-    redirect("/login");
+    redirect("/");
   }
 };
 

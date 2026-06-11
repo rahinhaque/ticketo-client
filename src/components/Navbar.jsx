@@ -1,20 +1,18 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { signOut, useSession } from "@/lib/auth-client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { FaTicketAlt, FaUser, FaSignOutAlt, FaThLarge } from "react-icons/fa";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { FaSignOutAlt, FaThLarge, FaUser } from "react-icons/fa";
 import Logo from "./Logo";
-import ThemeSwitcher from "./ThemeSwitcher";
-import { useRouter } from "next/router";
-import { useSession } from "@/lib/auth-client";
-import { auth } from "@/lib/auth";
+import Image from "next/image";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const session = useSession();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -28,12 +26,11 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = async() => {
-    await auth.signOut();
+  const handleLogout = async () => {
+    await signOut();
     router.push("/login");
   };
-
-
+  console.log(session);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-slate-950/65 backdrop-blur-md py-3.5 px-6">
@@ -67,8 +64,6 @@ export default function Navbar() {
 
         {/* RIGHT ACTIONS */}
         <div className="flex items-center gap-4">
-
-
           {!isLoggedIn && (
             <div className="flex items-center gap-3">
               <button
@@ -92,9 +87,11 @@ export default function Navbar() {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center transition-transform hover:scale-105 outline-none focus:outline-none cursor-pointer"
               >
-                <img
+                <Image
+                 width={20}
+                 height={20}
                   className="w-9 h-9 rounded-full object-cover border border-pink-500 shadow-md shadow-pink-500/10"
-                  src={mockUser.image}
+                  src={session.user.image}
                   alt="avatar"
                 />
               </button>
@@ -104,10 +101,14 @@ export default function Navbar() {
                   {/* User info */}
                   <div className="px-4 py-2.5 border-b border-white/5 mb-1.5 cursor-default">
                     <p className="text-[10px] text-pink-400 font-bold uppercase tracking-wider">
-                      {mockUser.role} Account
+                      {session.user.role} Account
                     </p>
-                    <p className="font-bold text-white text-sm mt-0.5">{mockUser.name}</p>
-                    <p className="text-[11px] text-slate-400 truncate mt-0.5">{mockUser.email}</p>
+                    <p className="font-bold text-white text-sm mt-0.5">
+                      {session.user.name}
+                    </p>
+                    <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                      {session.user.email}
+                    </p>
                   </div>
 
                   {/* Actions */}
@@ -121,7 +122,7 @@ export default function Navbar() {
                   </Link>
 
                   <Link
-                    href={`/dashboard/${mockUser.role}`}
+                    href={`/dashboard/${session.user.role}`}
                     onClick={() => setDropdownOpen(false)}
                     className="w-full flex items-center gap-2.5 px-4 py-2.5 text-left text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
                   >
