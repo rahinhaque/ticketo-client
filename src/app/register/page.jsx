@@ -22,9 +22,10 @@ import { FaUser, FaEnvelope, FaLock, FaImage, FaGoogle } from "react-icons/fa";
 import Logo from "@/components/Logo";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
-  //React Hook From for form state management
+  //React Hook From for form state management---------------------------------------------------
   const {
     register,
     handleSubmit,
@@ -32,18 +33,57 @@ export default function RegisterPage() {
   } = useForm();
   // console.log("Form Errors:", errors); // Log form errors for debugging
 
-  // Handle form submission
+  //Image  Upload function---------------------------------------------------------------------
+
+  // Handle form submission---------------------------------------------------------------------
   const onSubmit = async (data) => {
-    // console.log("Form Data:", data);
+    try {
+      toast.loading("Uploading image...");
 
-    // Handle form submission logic here (Better Auth)
-    const { data: signUpData, error: signUpError } =
-      await authClient.signUp.email({
-        ...data,
-      });
+      const imageFile = data.image[0];
 
-    console.log("Sign Up Response:", signUpData, signUpError);
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      const imgResult = await response.json();
+
+      if (!imgResult.success) {
+        toast.dismiss();
+        toast.error("Image upload failed");
+        return;
+      }
+
+      toast.dismiss();
+      toast.success("Image uploaded successfully");
+
+      const { data: signUpData, error: signUpError } =
+        await authClient.signUp.email({
+          ...data,
+          image: imgResult.data.url,
+        });
+
+      if (signUpError) {
+        toast.error(signUpError.message || "Registration failed");
+        return;
+      }
+
+      toast.success("Account created successfully!");
+
+      console.log(signUpData);
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong");
+    }
   };
+
 
   return (
     <div className="my-10 mx-auto">
@@ -60,6 +100,11 @@ export default function RegisterPage() {
         <CardBody className="gap-4">
           <Form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
             <Label htmlFor="name">Full Name</Label>
+            {
+              errors.name && (
+                <p className="text-red-500 text-sm mb-1">{errors.name.message}</p>
+              )
+            }
             <Input
               {...register("name", { required: "Name is required" })}
               id="name"
@@ -69,6 +114,11 @@ export default function RegisterPage() {
               className="w-full bg-slate-900/50 border-white/10 hover:border-pink-500/50 focus-within:!border-pink-500"
             />
             <Label htmlFor="email">Email Address</Label>
+            {
+              errors.email && (
+                <p className="text-red-500 text-sm mb-1">{errors.email.message}</p>
+              )
+            }
             <Input
               {...register("email", {
                 required: "Email is required",
@@ -85,6 +135,11 @@ export default function RegisterPage() {
               className="w-full bg-slate-900/50 border-white/10 hover:border-pink-500/50 focus-within:!border-pink-500"
             />
             <Label htmlFor="image">Profile Image URL</Label>
+            {
+              errors.image && (
+                <p className="text-red-500 text-sm mb-1">{errors.image.message}</p>
+              )
+            }
             <Input
               {...register("image", {
                 // pattern: {
@@ -92,6 +147,8 @@ export default function RegisterPage() {
                 //   message: "Invalid image URL",
                 // },
               })}
+              type="file"
+              accept="image/*"
               id="image"
               placeholder="https://example.com/avatar.jpg"
               labelPlacement="outside"
@@ -100,6 +157,11 @@ export default function RegisterPage() {
             />
 
             <Label htmlFor="password">Password</Label>
+            {
+              errors.password && (
+                <p className="text-red-500 text-sm mb-1">{errors.password.message}</p>
+              )
+            }
             <Input
               {...register("password", {
                 required: "Password is required",
@@ -128,6 +190,10 @@ export default function RegisterPage() {
               >
                 Select Role
               </Label>
+              {
+                errors.role && (
+                  <p className="text-red-500 text-sm mb-1">{errors.role.message}</p>
+              )}
               <select
                 {...register("role", { required: "Role is required" })}
                 id="role"
