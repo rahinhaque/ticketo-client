@@ -54,7 +54,7 @@ export default function Navbar() {
           </Link>
           {isLoggedIn && (
             <Link
-              href={"/"}
+              href={"/dashboard"}
               className={`text-sm font-medium transition-colors ${pathname.startsWith("/dashboard") ? "text-pink-500 font-semibold" : "text-slate-300 hover:text-white"}`}
             >
               Dashboard
@@ -68,7 +68,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                
+
                 className="inline-flex items-center justify-center font-semibold text-xs text-slate-300 hover:text-white h-9 px-4 rounded-xl hover:bg-white/5 transition"
               >
                 Login
