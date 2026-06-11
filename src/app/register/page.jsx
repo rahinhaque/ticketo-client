@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { uploadImage } from "@/utils/uploadImage";
+import { redirect } from "next/navigation";
 
 
 export default function RegisterPage() {
@@ -35,10 +36,12 @@ export default function RegisterPage() {
   } = useForm();
   // console.log("Form Errors:", errors); // Log form errors for debugging
 
-  //Image  Upload function---------------------------------------------------------------------
 
   // Handle form submission---------------------------------------------------------------------
 const onSubmit = async (data) => {
+  // 1. Declare the variable here so JavaScript knows it exists
+  let isSuccess = false;
+
   try {
     toast.loading("Uploading image...");
 
@@ -59,13 +62,25 @@ const onSubmit = async (data) => {
     }
 
     toast.success("Account created successfully!");
+
+    // 2. Change it to true since everything succeeded
+    isSuccess = true;
   } catch (error) {
     console.error(error);
     toast.dismiss();
     toast.error(error.message || "Something went wrong");
   }
+
+  // 3. This will now work perfectly without crashing
+  if (isSuccess) {
+    redirect("/login");
+  }
 };
 
+
+
+        // -========================================================---------------------------------------------
+        // main code ---------------------------------------------------------------------------------------------------
 
   return (
     <div className="my-10 mx-auto">
