@@ -6,9 +6,14 @@ import { usePathname } from "next/navigation";
 import { FaTicketAlt, FaUser, FaSignOutAlt, FaThLarge } from "react-icons/fa";
 import Logo from "./Logo";
 import ThemeSwitcher from "./ThemeSwitcher";
+import { useRouter } from "next/router";
+import { useSession } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const session = useSession();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -23,20 +28,12 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setDropdownOpen(false);
-    alert("Logged Out! (Design Only)");
+  const handleLogout = async() => {
+    await auth.signOut();
+    router.push("/login");
   };
 
 
-
-  const mockUser = {
-    name: "Jane Doe",
-    email: "jane@example.com",
-    role: "attendee",
-    image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde"
-  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-slate-950/65 backdrop-blur-md py-3.5 px-6">
