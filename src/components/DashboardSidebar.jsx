@@ -6,6 +6,7 @@ import React from "react";
 import {
   FaBuilding,
   FaCalendarAlt,
+  FaDollarSign,
   FaHome,
   FaPlus,
   FaSignOutAlt,
@@ -15,7 +16,8 @@ import {
 const DashboardSidebar = () => {
   //Getting the role from the session
   const { data: session } = useSession();
-  const role = session?.user?.role;
+
+  //Organizer Menu==============================================================
   const organizerMenu = [
     {
       key: "overview",
@@ -48,6 +50,57 @@ const DashboardSidebar = () => {
       href: "/dashboard/attendees",
     },
   ];
+  //attendee Menu==============================================================
+  const attendeeMenu = [
+    {
+      key: "home",
+      label: "Home",
+      icon: FaHome,
+      href: "/dashboard/attendee",
+    },
+    {
+      key: "tickets",
+      label: "My Tickets",
+      icon: FaCalendarAlt,
+      href: "/dashboard/tickets",
+    },
+    {
+      key: "payment",
+      label: "Payment",
+      icon: FaDollarSign,
+      href: "/dashboard/payment",
+    }
+  ];
+
+  //Admin Menu==============================================================
+  const adminMenu = [
+    {
+      key: "users",
+      label: "Users",
+      icon: FaUsers,
+      href: "/dashboard/users",
+    },
+    {
+      key: "events",
+      label: "Events",
+      icon: FaCalendarAlt,
+      href: "/dashboard/events",
+    },
+    {
+      key : "transactions",
+      label: "Transactions",
+      icon: FaDollarSign,
+      href: "/dashboard/transactions",
+    }
+  ];
+  // const role = "admin"; //For Testing
+  // const role = "attendee"; //For Testing
+  const role = session?.user?.role;
+
+
+  const menuItems = role === "organizer" ? organizerMenu : role === "attendee" ? attendeeMenu : adminMenu;
+
+
 
   //handleLogout
   const handleLogout = () => {
@@ -95,25 +148,24 @@ const DashboardSidebar = () => {
           <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest px-3 pb-2">
             Navigation
           </p>
-          {organizerMenu?.map(({ key, label, icon: Icon, href }) => {
+          {menuItems?.map(({ key, label, icon: Icon, href }) => {
             return (
               <Link
                 key={key}
                 href={href}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 text-left cursor-pointer
-                    "text-slate-400 hover:text-white hover:bg-white/5"
-                  `}
+          text-slate-400 hover:text-white
+          ${role === "admin" ? "hover:bg-yellow-500/10" : role === "organizer" ? "hover:bg-indigo-500/10" : "hover:bg-pink-500/10"}
+        `}
               >
                 <span
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors bg-gradient-to-br from-pink-500 to-indigo-600 text-white shadow-md shadow-pink-500/20"`}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors text-white shadow-md
+            ${role === "admin" ? "bg-yellow-500/20 shadow-yellow-500/20" : role === "organizer" ? "bg-indigo-500/20 shadow-indigo-500/20" : "bg-pink-500/20 shadow-pink-500/20"}
+          `}
                 >
                   <Icon size={20} />
                 </span>
                 <span>{label}</span>
-
-                {/* {isActive && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-pink-400" />
-                  )} */}
               </Link>
             );
           })}
