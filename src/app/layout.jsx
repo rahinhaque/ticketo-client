@@ -19,11 +19,15 @@ export default function RootLayout({ children }) {
           {children}
           <Toaster
             position="top-center"
-            richColors
             closeButton
+            richColors
             toastOptions={{
-              className:
-                "!bg-slate-900/70 !backdrop-blur-xl !border !border-slate-700/50",
+              style: {
+                background: "rgba(255,255,255,0.08)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "#fff",
+              },
             }}
           />
         </main>

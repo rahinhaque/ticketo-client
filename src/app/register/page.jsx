@@ -23,6 +23,7 @@ import Logo from "@/components/Logo";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { uploadImage } from "@/lib/uploadImage";
 
 export default function RegisterPage() {
   //React Hook From for form state management---------------------------------------------------
@@ -36,53 +37,33 @@ export default function RegisterPage() {
   //Image  Upload function---------------------------------------------------------------------
 
   // Handle form submission---------------------------------------------------------------------
-  const onSubmit = async (data) => {
-    try {
-      toast.loading("Uploading image...");
+const onSubmit = async (data) => {
+  try {
+    toast.loading("Uploading image...");
 
-      const imageFile = data.image[0];
+    const imageUrl = await uploadImage(data.image[0]);
 
-      const formData = new FormData();
-      formData.append("image", imageFile);
+    toast.dismiss();
+    toast.success("Image uploaded successfully");
 
-      const response = await fetch(
-        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+    const { data: signUpData, error: signUpError } =
+      await authClient.signUp.email({
+        ...data,
+        image: imageUrl,
+      });
 
-      const imgResult = await response.json();
-
-      if (!imgResult.success) {
-        toast.dismiss();
-        toast.error("Image upload failed");
-        return;
-      }
-
-      toast.dismiss();
-      toast.success("Image uploaded successfully");
-
-      const { data: signUpData, error: signUpError } =
-        await authClient.signUp.email({
-          ...data,
-          image: imgResult.data.url,
-        });
-
-      if (signUpError) {
-        toast.error(signUpError.message || "Registration failed");
-        return;
-      }
-
-      toast.success("Account created successfully!");
-
-      console.log(signUpData);
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
+    if (signUpError) {
+      toast.error(signUpError.message || "Registration failed");
+      return;
     }
-  };
+
+    toast.success("Account created successfully!");
+  } catch (error) {
+    console.error(error);
+    toast.dismiss();
+    toast.error(error.message || "Something went wrong");
+  }
+};
 
 
   return (
