@@ -23,7 +23,8 @@ import Logo from "@/components/Logo";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { uploadImage } from "@/lib/uploadImage";
+import { uploadImage } from "@/utils/uploadImage";
+
 
 export default function RegisterPage() {
   //React Hook From for form state management---------------------------------------------------
