@@ -1,6 +1,7 @@
 "use client";
 import DashboardHeading from "@/components/DashboardHeading";
 import { addOrganization } from "@/lib/api/organization/action";
+import myOrganization from "@/lib/api/organization/data";
 import { useSession } from "@/lib/auth-client";
 import { uploadImage } from "@/utils/uploadImage";
 import { CardHeader, Input } from "@heroui/react";
@@ -8,45 +9,55 @@ import { Card } from "@heroui/react";
 import { Form } from "@heroui/react";
 import { TextArea } from "@heroui/react";
 import { Button } from "@heroui/react";
-import React from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FaImage } from "react-icons/fa";
 import { toast } from "sonner";
 
 const OrganizationPage = () => {
+  //getting the user session for email------------------------------
+  const { data: session } = useSession();
 
-  const {data: session} = useSession();
-
-
+  // React hook form for form validation---------------------------------
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  // Getting the data of The organization ---------------------------
+  const [myOrg, setMyOrg] = useState(null);
+
+  useEffect(() => {
+    if (!session?.user?.email) return; // ← guard against null session
+
+    const setOrgData = async () => {
+      const org = await myOrganization(session.user.email);
+      setMyOrg(org[0]); // ← take first item from array
+    };
+    setOrgData();
+  }, [session?.user?.email]); // ← depend on email not whole session object
+
+  //Handle form submission--------------------------------------------
   const onSubmit = async (data) => {
+    toast.loading("Uploading image...");
 
-      toast.loading("Uploading image...");
-
-      const imageUrl = await uploadImage(data.logo[0]);
-      const orgData = {
-        organization: data.organization,
-        logo: imageUrl,
-        website: data.website,
-        description: data.description,
-        organizerEmail: session?.user?.email,
-      }
-      const resData = await addOrganization(orgData);
-      console.log(resData);
-
-      //Toast for uploading image success
-      toast.dismiss();
-      toast.success("Image uploaded successfully");
-
-      console.log(imageUrl);
-      console.log(data);
-
+    const imageUrl = await uploadImage(data.logo[0]);
+    const orgData = {
+      organization: data.organizationName,
+      logo: imageUrl,
+      website: data.organizationWebsite,
+      description: data.description,
+      organizerEmail: session?.user?.email,
+    };
+    const resData = await addOrganization(orgData);
+    if (resData.insertedId) {
+      toast.success("Organization added successfully!");
     }
+
+    toast.dismiss();
+    toast.success("Image uploaded successfully");
+  };
 
   return (
     <div>
@@ -81,6 +92,7 @@ const OrganizationPage = () => {
               className="space-y-4 w-full"
             >
               <Input
+                defaultValue={myOrg?.organization} // ← fixed field name
                 {...register("organizationName", { required: true })}
                 id="organizationName"
                 label="Organization Name"
@@ -96,16 +108,10 @@ const OrganizationPage = () => {
               )}
 
               <Input
-                {...register("logo", {
-                  // pattern: {
-                  //   value: /^(http:\/\/|https:\/\/).+$/i,
-                  //   message: "Invalid image URL",
-                  // },
-                })}
+                {...register("logo")}
                 type="file"
                 accept="image/*"
                 id="logo"
-                placeholder="https://example.com/avatar.jpg"
                 labelPlacement="outside"
                 startContent={<FaImage className="text-slate-400 text-sm" />}
                 className="w-full bg-slate-900/50 border-white/10 hover:border-pink-500/50 focus-within:!border-pink-500"
@@ -115,6 +121,7 @@ const OrganizationPage = () => {
               )}
 
               <Input
+                defaultValue={myOrg?.website} // ← correct field name
                 {...register("organizationWebsite", { required: true })}
                 id="organizationWebsite"
                 label="Organization Website"
@@ -130,6 +137,8 @@ const OrganizationPage = () => {
               )}
 
               <TextArea
+                defaultValue={myOrg?.description} // ← correct field name
+                {...register("description", { required: true })}
                 id="org-desc"
                 label="Description"
                 labelPlacement="outside"

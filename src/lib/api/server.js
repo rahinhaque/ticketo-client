@@ -11,8 +11,8 @@ const serverMutation = async(path , method, data) => {
   return res.json();
 }
 
-const serverFetch = async(path) => {
-  const res = await fetch(`${baseUrl}/${path}`)
+export const serverFetch = async(path) => {
+  const res = await fetch(`${baseUrl}${path}`)
   return res.json();
 }
 
