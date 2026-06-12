@@ -1,6 +1,6 @@
 "use client";
 import DashboardHeading from "@/components/DashboardHeading";
-import { addOrganization } from "@/lib/api/organization/action";
+import { addOrganization, updataOrganization } from "@/lib/api/organization/action";
 import myOrganization from "@/lib/api/organization/data";
 import { useSession } from "@/lib/auth-client";
 import { uploadImage } from "@/utils/uploadImage";
@@ -50,10 +50,19 @@ const OrganizationPage = () => {
       description: data.description,
       organizerEmail: session?.user?.email,
     };
-    const resData = await addOrganization(orgData);
-    if (resData.insertedId) {
-      toast.success("Organization added successfully!");
+    console.log(myOrg._id);
+    if(!myOrg){
+      const resData = await addOrganization(orgData);
+      if (resData.insertedId) {
+        toast.success("Organization added successfully!");
+      }
+    }else{
+      const updatedResData = await updataOrganization(orgData, myOrg._id);
+      if (updatedResData.modifiedCount > 0) {
+        toast.success("Organization updated successfully!");
+      }
     }
+
 
     toast.dismiss();
     toast.success("Image uploaded successfully");
