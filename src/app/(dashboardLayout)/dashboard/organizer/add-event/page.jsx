@@ -85,6 +85,12 @@ const AddEventPage = () => {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 <div className="flex flex-col gap-1 w-full">
+                  <label
+                    htmlFor="event-title"
+                    className="text-xs text-slate-400"
+                  >
+                    Event Title
+                  </label>
                   <Input
                     {...register("title", {
                       required: "Event title is required",
@@ -102,6 +108,12 @@ const AddEventPage = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-1 w-full">
+                  <label
+                    htmlFor="event-banner"
+                    className="text-xs text-slate-400"
+                  >
+                    Banner Image URL
+                  </label>
                   <Input
                     {...register("banner", {
                       required: "Banner image URL is required",
@@ -121,6 +133,12 @@ const AddEventPage = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 <div className="flex flex-col gap-2 w-full">
+                  <label
+                    htmlFor="event-category"
+                    className="text-xs text-slate-400"
+                  >
+                    Category
+                  </label>
                   <Controller
                     name="category"
                     control={control}
@@ -162,6 +180,12 @@ const AddEventPage = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-2 w-full">
+                  <label
+                    htmlFor="event-location"
+                    className="text-xs text-slate-400"
+                  >
+                    Location
+                  </label>
                   <Controller
                     name="location"
                     control={control}
@@ -205,6 +229,12 @@ const AddEventPage = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                 <div className="flex flex-col gap-1 w-full">
+                  <label
+                    htmlFor="event-date"
+                    className="text-xs text-slate-400"
+                  >
+                    Date
+                  </label>
                   <Input
                     {...register("date", { required: "Date is required" })}
                     id="event-date"
@@ -221,6 +251,12 @@ const AddEventPage = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-1 w-full">
+                  <label
+                    htmlFor="event-price"
+                    className="text-xs text-slate-400"
+                  >
+                    Price
+                  </label>
                   <Input
                     {...register("price", {
                       required: "Price is required",
@@ -243,6 +279,12 @@ const AddEventPage = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-1 w-full">
+                  <label
+                    htmlFor="event-seats"
+                    className="text-xs text-slate-400"
+                  >
+                    Capacity
+                  </label>
                   <Input
                     {...register("seats", {
                       required: "Capacity is required",
@@ -265,6 +307,12 @@ const AddEventPage = () => {
                 </div>
               </div>
               <div className="flex flex-col gap-1 w-full">
+                <label
+                  htmlFor="event-desc"
+                  className="text-xs text-slate-400"
+                >
+                  Description
+                </label>
                 <TextArea
                   {...register("description", {
                     required: "Description is required",
