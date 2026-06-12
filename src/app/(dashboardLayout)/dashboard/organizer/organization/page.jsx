@@ -50,7 +50,7 @@ const OrganizationPage = () => {
       description: data.description,
       organizerEmail: session?.user?.email,
     };
-    console.log(myOrg._id);
+    // console.log(myOrg._id);
     if(!myOrg){
       const resData = await addOrganization(orgData);
       if (resData.insertedId) {
