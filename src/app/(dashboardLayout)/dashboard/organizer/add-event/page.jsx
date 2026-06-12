@@ -1,5 +1,8 @@
 "use client";
 import DashboardHeading from "@/components/DashboardHeading";
+import { addEvent } from "@/lib/api/events/action";
+import { useSession } from "@/lib/auth-client";
+import { uploadImage } from "@/utils/uploadImage";
 import {
   CardHeader,
   Input,
@@ -17,8 +20,13 @@ import { TextArea } from "@heroui/react";
 import { Button } from "@heroui/react";
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
+import { FaImage } from "react-icons/fa";
+import { toast } from "sonner";
 
 const AddEventPage = () => {
+  const {data: session} = useSession();
+
+
   const CATEGORIES = [
     "Music",
     "Tech",
@@ -48,7 +56,22 @@ const AddEventPage = () => {
 
   // Handle form submission--------------------------------------------
   const onSubmit = async (data) => {
-    console.log(data);
+    toast.loading("Uploading image...");
+    const imageFile = data.banner[0];
+    const imageUrl = await uploadImage(imageFile);
+
+    delete data?.banner;
+    const updataData = {
+      ...data,
+      banner: imageUrl,
+      organizerEmail: session?.user?.email,
+    };
+
+    const resData = await addEvent(updataData);
+    if (resData.insertedId) {
+      toast.success("Event added successfully!");
+    }
+
   };
 
   return (
@@ -115,17 +138,18 @@ const AddEventPage = () => {
                     Banner Image URL
                   </label>
                   <Input
-                    {...register("banner", {
-                      required: "Banner image URL is required",
-                    })}
-                    label="Banner Image URL"
+                    {...register("banner")}
+                    type="file"
+                    accept="image/*"
+                    id="logo"
                     labelPlacement="outside"
-                    placeholder="https://images.unsplash.com/..."
-                    isInvalid={!!errors.banner}
+                    startContent={
+                      <FaImage className="text-slate-400 text-sm" />
+                    }
                     className="w-full bg-slate-900/50 border-white/10 hover:border-pink-500/50 focus-within:!border-pink-500"
                   />
                   {errors.banner && (
-                    <p className="text-red-400 text-xs">
+                    <p className="text-red-500 text-sm">
                       {errors.banner.message}
                     </p>
                   )}
@@ -307,10 +331,7 @@ const AddEventPage = () => {
                 </div>
               </div>
               <div className="flex flex-col gap-1 w-full">
-                <label
-                  htmlFor="event-desc"
-                  className="text-xs text-slate-400"
-                >
+                <label htmlFor="event-desc" className="text-xs text-slate-400">
                   Description
                 </label>
                 <TextArea
