@@ -18,6 +18,7 @@ import { Form } from "@heroui/react";
 import { ListBoxItem } from "@heroui/react";
 import { TextArea } from "@heroui/react";
 import { Button } from "@heroui/react";
+import { redirect } from "next/navigation";
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { FaImage } from "react-icons/fa";
@@ -70,6 +71,7 @@ const AddEventPage = () => {
     const resData = await addEvent(updataData);
     if (resData.insertedId) {
       toast.success("Event added successfully!");
+      redirect("/dashboard/organizer/events");
     }
 
   };
