@@ -12,3 +12,9 @@ export const updateEvent = async (data, id) => {
   const resData = await serverMutation(`/api/events/${id}`, "PATCH", data);
   return resData;
 };
+
+
+export const deleteEvents = async (id) => {
+  const resData = await serverMutation(`/api/events/${id}`, "DELETE");
+  return resData;
+}

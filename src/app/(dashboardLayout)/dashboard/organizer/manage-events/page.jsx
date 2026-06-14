@@ -1,6 +1,6 @@
 "use client";
 import DashboardHeading from "@/components/DashboardHeading";
-import { updateEvent } from "@/lib/api/events/action";
+import { deleteEvents, updateEvent } from "@/lib/api/events/action";
 import getEvents from "@/lib/api/events/data";
 
 import { useSession } from "@/lib/auth-client";
@@ -153,7 +153,9 @@ const ManageEventPage = () => {
   };;
 
   const handleDelete = (eventId) => {
-    console.log("Delete event:", eventId);
+    deleteEvents(eventId);
+    toast.success("Event deleted successfully!");
+    setEvents((prev) => prev.filter((e) => e._id !== eventId));
   };
 
   return (

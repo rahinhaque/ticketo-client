@@ -57,7 +57,7 @@ const AddEventPage = () => {
 
   // Handle form submission--------------------------------------------
   const onSubmit = async (data) => {
-    toast.loading("Uploading image...");
+    
     const imageFile = data.banner[0];
     const imageUrl = await uploadImage(imageFile);
 
