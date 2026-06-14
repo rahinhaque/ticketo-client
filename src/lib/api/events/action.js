@@ -7,7 +7,8 @@ export const addEvent = async (data) => {
   return resData;
 };
 
-export const updataEvent = async (data, id) => {
-  const resData = await serverMutation(`/api/events${id}`, "PATCH", data);
+export const updateEvent = async (data, id) => {
+  // console.log("Update event:", data);
+  const resData = await serverMutation(`/api/events/${id}`, "PATCH", data);
   return resData;
 };

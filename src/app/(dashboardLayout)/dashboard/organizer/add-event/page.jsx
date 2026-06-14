@@ -71,7 +71,7 @@ const AddEventPage = () => {
     const resData = await addEvent(updataData);
     if (resData.insertedId) {
       toast.success("Event added successfully!");
-      redirect("/dashboard/organizer/events");
+      redirect("/events");
     }
 
   };
