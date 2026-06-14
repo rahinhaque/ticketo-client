@@ -27,13 +27,8 @@ import {
   ListBoxItem,
   TextArea,
   Button,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
 } from "@heroui/react";
-import { Pencil, Trash2, X } from "lucide-react";
+import { Pencil, Trash2, X, AlertTriangle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { FaImage } from "react-icons/fa";
@@ -66,6 +61,11 @@ const ManageEventPage = () => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Delete confirmation state
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [deleteTargetTitle, setDeleteTargetTitle] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const {
     register,
@@ -111,8 +111,7 @@ const ManageEventPage = () => {
         : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
   };
 
-
-  //Modal open and close
+  // Modal open and close
   const handleEdit = (event) => {
     setEditingEvent(event);
     setIsModalOpen(true);
@@ -124,25 +123,43 @@ const ManageEventPage = () => {
     reset();
   };
 
-  //Handle form submission of edit and delete
+  // Open delete confirmation modal
+  const handleDeleteClick = (event) => {
+    setDeleteTargetId(event._id);
+    setDeleteTargetTitle(event.title || "this event");
+    setIsDeleteModalOpen(true);
+  };
+
+  // Close delete modal without deleting
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setDeleteTargetId(null);
+    setDeleteTargetTitle("");
+  };
+
+  // Confirm and execute delete
+  const handleConfirmDelete = () => {
+    deleteEvents(deleteTargetId);
+    toast.success("Event deleted successfully!");
+    setEvents((prev) => prev.filter((e) => e._id !== deleteTargetId));
+    handleCancelDelete();
+  };
+
+  // Handle form submission of edit
   const onEditSubmit = async (data) => {
-    // console.log("Edit event:", data);
-    // ✅ Fix
     const updataData = { ...data };
-    delete updataData.banner; // remove the FileList from the payload by default
+    delete updataData.banner;
 
     if (data?.banner?.[0]) {
       const imageUrl = await uploadImage(data.banner[0]);
       updataData.banner = imageUrl;
     } else {
-      updataData.banner = editingEvent.banner; // keep existing banner
+      updataData.banner = editingEvent.banner;
     }
 
     const resData = await updateEvent(updataData, editingEvent._id);
     if (resData.modifiedCount > 0) {
       toast.success("Event updated successfully!");
-
-      // ✅ Patch the local state so the table updates instantly
       setEvents((prev) =>
         prev.map((e) =>
           e._id === editingEvent._id ? { ...e, ...updataData } : e,
@@ -150,12 +167,6 @@ const ManageEventPage = () => {
       );
       handleCloseModal();
     }
-  };;
-
-  const handleDelete = (eventId) => {
-    deleteEvents(eventId);
-    toast.success("Event deleted successfully!");
-    setEvents((prev) => prev.filter((e) => e._id !== eventId));
   };
 
   return (
@@ -259,7 +270,7 @@ const ManageEventPage = () => {
                               <Pencil size={14} />
                             </button>
                             <button
-                              onClick={() => handleDelete(event._id)}
+                              onClick={() => handleDeleteClick(event)}
                               className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors duration-150"
                               aria-label="Delete event"
                             >
@@ -276,6 +287,70 @@ const ManageEventPage = () => {
           </div>
         </Card>
       </div>
+
+      {/* ── Delete Confirmation Modal ── */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={handleCancelDelete}
+          />
+
+          {/* Modal Panel */}
+          <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-slate-900 shadow-2xl">
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-white/5 p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20">
+                  <AlertTriangle size={18} className="text-red-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Delete Event</h3>
+                  <p className="mt-0.5 text-xs text-slate-400">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleCancelDelete}
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors"
+                aria-label="Close modal"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Are you sure you want to delete{" "}
+                <span className="font-semibold text-white">
+                  &ldquo;{deleteTargetTitle}&rdquo;
+                </span>
+                ? All event data including attendees and ticket sales will be
+                permanently removed.
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 border-t border-white/5 px-6 py-4">
+              <button
+                onClick={handleCancelDelete}
+                className="h-10 px-5 rounded-xl border border-white/10 text-slate-300 text-sm font-medium hover:bg-white/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="h-10 px-5 rounded-xl bg-red-500/90 hover:bg-red-500 text-white text-sm font-bold transition-colors shadow-lg shadow-red-500/10"
+              >
+                Delete Event
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Edit Event Modal ── */}
       {isModalOpen && (
