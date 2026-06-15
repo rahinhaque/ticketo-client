@@ -57,7 +57,7 @@ const AddEventPage = () => {
 
   // Handle form submission--------------------------------------------
   const onSubmit = async (data) => {
-    
+
     const imageFile = data.banner[0];
     const imageUrl = await uploadImage(imageFile);
 
@@ -69,9 +69,14 @@ const AddEventPage = () => {
     };
 
     const resData = await addEvent(updataData);
+    console.log(resData);
     if (resData.insertedId) {
       toast.success("Event added successfully!");
       redirect("/events");
+    } else{
+      toast.error(
+        "Your free plan can add only 3 events, please upgrade to premium plan.",
+      );
     }
 
   };
