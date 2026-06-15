@@ -69,7 +69,7 @@ const AddEventPage = () => {
     };
 
     const resData = await addEvent(updataData);
-    console.log(resData);
+    // console.log(resData);
     if (resData.insertedId) {
       toast.success("Event added successfully!");
       redirect("/events");
