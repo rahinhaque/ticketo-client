@@ -1,11 +1,9 @@
 import baseUrl from "@/lib/api/baseUrl";
 import Link from "next/link";
 import { MapPin, Calendar, Tag, ArrowRight } from "lucide-react";
+import { fetchEvents } from "@/lib/api/events/data";
 
-const fetchEvents = async () => {
-  const res = await fetch(`${baseUrl}/api/events`, { cache: "no-store" });
-  return res.json();
-};
+
 
 const EventsPage = async () => {
   const events = await fetchEvents();
