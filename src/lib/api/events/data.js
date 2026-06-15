@@ -14,3 +14,9 @@ export const fetchEvents = async () => {
   const res = await serverFetch(`/api/events`);
   return res;
 }
+
+//get single event description
+export const getEventDescription = async (id) => {
+  const res = await serverFetch(`/api/single-events/${id}`);
+  return res;
+}
