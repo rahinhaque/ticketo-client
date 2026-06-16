@@ -1,10 +1,19 @@
 import DashboardHeading from "@/components/DashboardHeading";
+import { getUser } from "@/lib/api/session";
+import { auth } from "@/lib/auth";
 import { Button } from "@heroui/react";
 import { Card } from "@heroui/react";
+import { headers } from "next/headers";
 import React from "react";
-import { FaCalendarAlt, FaCrown, FaDollarSign, FaUsers } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaCrown,
+  FaDollarSign,
+  FaUsers,
+  FaCheckCircle,
+} from "react-icons/fa";
 
-const OrganizerOverviewPage = () => {
+const OrganizerOverviewPage = async () => {
   const stats = {
     totalEvents: 15,
     totalAttendees: 450,
@@ -12,7 +21,12 @@ const OrganizerOverviewPage = () => {
     totalSoldTickets: 780,
   };
 
-  const isPremium = false;
+  const user = await getUser();
+  // console.log(user);
+  // const isPremium = user?.isPremium;
+  const isPremium = true;
+
+
 
   return (
     <div className="space-y-6">
@@ -81,7 +95,36 @@ const OrganizerOverviewPage = () => {
       </div>
 
       {/* Premium Upgrade Alert Banner */}
-      {!isPremium && (
+      {/* Premium Banner — shows based on isPremium */}
+      {isPremium ? (
+        <Card
+          className="border border-emerald-500/20 bg-gradient-to-r from-emerald-500/5 via-green-600/5 to-transparent relative overflow-hidden"
+          radius="lg"
+        >
+          <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-6 z-10">
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <FaCrown className="text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" />{" "}
+                You're a Premium Member
+              </h3>
+              <p className="text-slate-400 text-xs max-w-xl leading-relaxed">
+                Enjoy{" "}
+                <strong className="text-emerald-400">
+                  unlimited event creation
+                </strong>{" "}
+                and all premium perks. Your audience is waiting — go ahead and
+                create something amazing.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-5 py-3 shrink-0">
+              <FaCheckCircle className="text-emerald-400 text-lg" />
+              <span className="text-emerald-300 font-bold text-sm uppercase tracking-wider">
+                Premium Active
+              </span>
+            </div>
+          </div>
+        </Card>
+      ) : (
         <Card
           className="border border-yellow-500/20 bg-gradient-to-r from-yellow-500/5 via-amber-600/5 to-transparent relative overflow-hidden"
           radius="lg"
