@@ -1,4 +1,6 @@
+"use server";
 import DashboardHeading from "@/components/DashboardHeading";
+import UpgradePremiumButton from "@/components/UpgradePremiumButton";
 import { getUser } from "@/lib/api/session";
 import { auth } from "@/lib/auth";
 import { Button } from "@heroui/react";
@@ -23,8 +25,8 @@ const OrganizerOverviewPage = async () => {
 
   const user = await getUser();
   // console.log(user);
-  // const isPremium = user?.isPremium;
-  const isPremium = true;
+  const isPremium = user?.isPremium;
+  // const isPremium = true;
 
 
 
@@ -143,12 +145,7 @@ const OrganizerOverviewPage = async () => {
                 unlimited events.
               </p>
             </div>
-            <Button
-              className="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black h-11 px-6 shadow-lg shadow-yellow-500/20 shrink-0 uppercase tracking-wider transition-all duration-300 hover:scale-105"
-              radius="lg"
-            >
-              Upgrade to Premium
-            </Button>
+            <UpgradePremiumButton/>
           </div>
         </Card>
       )}
