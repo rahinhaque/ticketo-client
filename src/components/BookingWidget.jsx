@@ -3,9 +3,17 @@
 import { useState } from "react";
 import { Card, Button, Input } from "@heroui/react";
 import { FaCheck } from "react-icons/fa";
+import { useSession } from "@/lib/auth-client";
 
-export default function BookingWidget({ ticketPrice = 49.99, availableSeats = 120 }) {
+export default function BookingWidget({
+  ticketPrice = 49.99,
+  availableSeats = 120,
+}) {
+  const { data: session } = useSession();
+  const user = session?.user || null;
+
   const isSoldOut = availableSeats <= 0;
+  const isOrganizer = user?.role === "organizer";
 
   return (
     <Card className="glass border-white/5 sticky top-24" radius="lg">
@@ -32,7 +40,7 @@ export default function BookingWidget({ ticketPrice = 49.99, availableSeats = 12
           </div>
         </div>
 
-        {!isSoldOut && (
+        {!isSoldOut && !isOrganizer && (
           <>
             {/* Quantity selector */}
             <Input
@@ -55,14 +63,19 @@ export default function BookingWidget({ ticketPrice = 49.99, availableSeats = 12
         )}
 
         <Button
-          isDisabled={isSoldOut}
-          className={`w-full font-bold h-12 shadow-lg ${isSoldOut
-            ? "bg-slate-800 text-slate-500 shadow-none cursor-not-allowed"
-            : "bg-gradient-to-r from-pink-500 to-indigo-600 text-white shadow-pink-500/10 hover:shadow-pink-500/20"
-            }`}
+          isDisabled={isSoldOut || isOrganizer}
+          className={`w-full font-bold h-12 shadow-lg ${
+            isSoldOut || isOrganizer
+              ? "bg-slate-800 text-slate-500 shadow-none cursor-not-allowed"
+              : "bg-gradient-to-r from-pink-500 to-indigo-600 text-white shadow-pink-500/10 hover:shadow-pink-500/20"
+          }`}
           radius="lg"
         >
-          {isSoldOut ? "Sold Out" : "Book Ticket Now"}
+          {isSoldOut
+            ? "Sold Out"
+            : isOrganizer
+              ? "Organizers Can't Book Tickets"
+              : "Book Ticket Now"}
         </Button>
 
         <div className="flex items-center gap-2 text-[11px] text-slate-400 text-center justify-center pt-2">

@@ -1,4 +1,6 @@
 import { getEventDescription } from "@/lib/api/events/data";
+import { auth } from "@/lib/auth"; // adjust to your actual server auth export
+import { headers } from "next/headers";
 import Link from "next/link";
 import {
   MapPin,
@@ -13,6 +15,10 @@ import {
 const EventDetails = async ({ params }) => {
   const { id } = await params;
   const event = await getEventDescription(id);
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  const user = session?.user || null;
+  const isOrganizer = user?.role === "organizer";
 
   const formattedDate = event?.date
     ? new Date(event.date).toLocaleDateString("en-US", {
@@ -186,6 +192,13 @@ const EventDetails = async ({ params }) => {
                       className="w-full flex items-center justify-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed"
                     >
                       Sold Out
+                    </button>
+                  ) : isOrganizer ? (
+                    <button
+                      disabled
+                      className="w-full flex items-center justify-center gap-2 bg-slate-800 border border-white/5 text-slate-500 font-bold py-3 rounded-xl text-sm cursor-not-allowed"
+                    >
+                      Organizers Can't Book Tickets
                     </button>
                   ) : (
                     <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-indigo-600 hover:opacity-90 transition-opacity text-white font-bold py-3 rounded-xl shadow-lg shadow-pink-500/10 text-sm">
