@@ -2,11 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { stripe } from "../../../../../lib/stripe";
-import { getUser } from "@/lib/api/session";
+import baseUrl from "@/lib/api/baseUrl";
+
 
 export default async function PremiumSuccess({ searchParams }) {
   const { session_id } = await searchParams;
-  const user = await getUser();
+
+    
 
   if (!session_id) {
     throw new Error("Please provide a valid session_id (`cs_test_...`)");
@@ -18,6 +20,13 @@ export default async function PremiumSuccess({ searchParams }) {
   } = await stripe.checkout.sessions.retrieve(session_id, {
     expand: ["line_items", "payment_intent"],
   });
+
+  const res = await fetch(
+    `${baseUrl}/api/users/upgrade-premium/${customerEmail}`,
+    {
+      method: "PATCH",
+    },
+  );
 
   if (status === "open") {
     redirect("/");
@@ -122,7 +131,7 @@ export default async function PremiumSuccess({ searchParams }) {
               href="mailto:orders@example.com"
               className="text-yellow-500 hover:text-yellow-400 underline underline-offset-2"
             >
-              haquerahin743@gmail.com 
+              haquerahin743@gmail.com
             </a>
           </p>
 
