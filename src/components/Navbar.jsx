@@ -8,11 +8,19 @@ import { FaSignOutAlt, FaThLarge, FaUser } from "react-icons/fa";
 import Logo from "./Logo";
 import Image from "next/image";
 
+const roleDashboardRoutes = {
+  organizer: "/dashboard/organizer",
+  attendee: "/dashboard/attendee",
+  admin: "/dashboard/users",
+};
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user;
+  const dashboardHref =
+    roleDashboardRoutes[session?.user?.role] || "/dashboard/organizer";
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -30,7 +38,6 @@ export default function Navbar() {
     await signOut();
     router.push("/login");
   };
-  console.log(session);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-slate-950/65 backdrop-blur-md py-3.5 px-6">
@@ -54,7 +61,7 @@ export default function Navbar() {
           </Link>
           {isLoggedIn && (
             <Link
-              href={"/dashboard/organizer"}
+              href={dashboardHref}
               className={`text-sm font-medium transition-colors ${pathname.startsWith("/dashboard") ? "text-pink-500 font-semibold" : "text-slate-300 hover:text-white"}`}
             >
               Dashboard
@@ -113,7 +120,7 @@ export default function Navbar() {
 
                   {/* Actions */}
                   <Link
-                    href="/dashboard/organizer"
+                    href={dashboardHref}
                     onClick={() => setDropdownOpen(false)}
                     className="w-full flex items-center gap-2.5 px-4 py-2.5 text-left text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
                   >
