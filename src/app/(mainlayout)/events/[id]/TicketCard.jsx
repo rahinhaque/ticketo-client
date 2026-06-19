@@ -9,6 +9,8 @@ export default function TicketCard({
   date,
   location,
   isOrganizer,
+  eventId,
+  eventTitle
 }) {
   const [quantity, setQuantity] = useState(1);
 
@@ -22,6 +24,33 @@ export default function TicketCard({
     value = Math.max(1, Math.min(value, Number(seats) || 1));
     setQuantity(value);
   };
+
+
+  const handleBookTicket = async () => {
+    if (isFree) {
+      // separate endpoint that just creates a ticket/RSVP directly, no Stripe involved
+      const res = await fetch("/api/tickets/reserve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventId, quantity }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.href = `/dashboard/tickets/success?free=true`;
+      }
+      return;
+    }
+
+    const res = await fetch("/api/checkout_sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "booking", eventId, quantity }),
+    });
+
+    const data = await res.json();
+    if (data?.url) window.location.href = data.url;
+  };
+
 
   return (
     <div className="sticky top-6 rounded-2xl border border-white/5 bg-slate-900/60 backdrop-blur-xl shadow-2xl overflow-hidden">
@@ -119,7 +148,10 @@ export default function TicketCard({
               Organizers Can't Book Tickets
             </button>
           ) : (
-            <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-indigo-600 hover:opacity-90 transition-opacity text-white font-bold py-3 rounded-xl shadow-lg shadow-pink-500/10 text-sm">
+            <button
+              onClick={handleBookTicket}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-indigo-600 hover:opacity-90 transition-opacity text-white font-bold py-3 rounded-xl shadow-lg shadow-pink-500/10 text-sm"
+            >
               <Ticket size={16} />
               {isFree
                 ? "Reserve a Spot"

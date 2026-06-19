@@ -121,6 +121,8 @@ const EventDetails = async ({ params }) => {
               date={shortDate}
               location={event?.location}
               isOrganizer={isOrganizer}
+              eventId={event?._id}
+              eventTitle={event?.title}
             />
           </div>
         </div>
