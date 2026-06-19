@@ -15,31 +15,45 @@ export default async function TicketSuccessPage({ searchParams }) {
     );
   }
 
-  const session = await stripe.checkout.sessions.retrieve(session_id);
+ const session = await stripe.checkout.sessions.retrieve(session_id);
+ console.log("Stripe session metadata:", session.metadata); // ← add this line
 
-  if (session.payment_status !== "paid") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
-        <p>Payment not completed.</p>
-      </div>
-    );
-  }
+ if (session.payment_status !== "paid") {
+   return (
+     <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+       <p>Payment not completed.</p>
+     </div>
+   );
+ }
 
   const { type, eventId, userEmail, quantity } = session.metadata || {};
 
   if (type === "booking") {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        eventId,
-        userEmail,
-        quantity: Number(quantity) || 1,
-        totalPrice: session.amount_total / 100,
-        stripeSessionId: session.id,
-        status: "confirmed",
-      }),
-    });
+    try {
+      const bookingRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventId,
+            userEmail,
+            quantity: Number(quantity) || 1,
+            totalPrice: session.amount_total / 100,
+            stripeSessionId: session.id,
+            status: "confirmed",
+          }),
+        },
+      );
+      const bookingData = await bookingRes.json();
+      if (!bookingRes.ok) {
+        console.error("Booking creation failed:", bookingData);
+      } else {
+        console.log("Booking created:", bookingData);
+      }
+    } catch (err) {
+      console.error("Booking fetch error:", err);
+    }
   }
 
   if (type === "premium") {
