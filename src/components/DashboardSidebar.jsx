@@ -62,14 +62,14 @@ const DashboardSidebar = () => {
       key: "tickets",
       label: "My Tickets",
       icon: FaCalendarAlt,
-      href: "/dashboard/tickets",
+      href: "/dashboard/attendee/tickets",
     },
     {
       key: "payment",
       label: "Payment",
       icon: FaDollarSign,
-      href: "/dashboard/payment",
-    }
+      href: "/dashboard/attendee/payment",
+    },
   ];
 
   //Admin Menu==============================================================
