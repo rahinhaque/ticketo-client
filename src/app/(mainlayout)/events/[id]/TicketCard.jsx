@@ -36,7 +36,7 @@ export default function TicketCard({
       });
       const data = await res.json();
       if (res.ok) {
-        window.location.href = `/dashboard/tickets/success?free=true`;
+        window.location.href = `/events/${eventId}/payment-succes?free=true`;
       }
       return;
     }
