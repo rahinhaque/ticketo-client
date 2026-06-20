@@ -4,18 +4,18 @@ import React from 'react';
 
 const UpgradePremiumButton = () => {
 
-   const upgradeToPremium = async () => {
-       const res = await fetch("/api/checkout_sessions", {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-       });
+  const upgradeToPremium = async () => {
+    const res = await fetch("/api/checkout_sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "premium" }),
+    });
 
-       const data = await res.json();
-      //  console.log(data.url);
-      if(data?.url){
-        window.location.href = data.url
-      }
-   };
+    const data = await res.json();
+    if (data?.url) {
+      window.location.href = data.url;
+    }
+  };
 
   return (
     <div>

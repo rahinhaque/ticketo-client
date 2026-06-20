@@ -4,35 +4,49 @@ import { redirect } from "next/navigation";
 import { stripe } from "../../../../../lib/stripe";
 import baseUrl from "@/lib/api/baseUrl";
 
-
 export default async function PremiumSuccess({ searchParams }) {
   const { session_id } = await searchParams;
-
-    
 
   if (!session_id) {
     throw new Error("Please provide a valid session_id (`cs_test_...`)");
   }
 
-  const {
-    status,
-    customer_details: { email: customerEmail },
-  } = await stripe.checkout.sessions.retrieve(session_id, {
+  const sessionData = await stripe.checkout.sessions.retrieve(session_id, {
     expand: ["line_items", "payment_intent"],
   });
 
-  const res = await fetch(
-    `${baseUrl}/api/users/upgrade-premium/${customerEmail}`,
-    {
-      method: "PATCH",
-    },
-  );
+  const { status, amount_total } = sessionData;
+  const customerEmail = sessionData.customer_details?.email;
+
+  if (!customerEmail) {
+    throw new Error("Customer email not found.");
+  }
 
   if (status === "open") {
     redirect("/");
   }
 
   if (status === "complete") {
+    const response = await fetch(
+      `${baseUrl}/api/users/upgrade-premium/${customerEmail}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          stripeSessionId: session_id,
+          amount: amount_total,
+          plan: "premium",
+        }),
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to upgrade user to premium.");
+    }
+
     return (
       <section
         id="success"
@@ -42,12 +56,12 @@ export default async function PremiumSuccess({ searchParams }) {
         <div className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-yellow-500/10 rounded-full blur-3xl" />
 
         <div className="relative w-full max-w-md">
-          {/* Ticket card */}
+          {/* Ticket Card */}
           <div className="relative bg-slate-900 rounded-2xl shadow-2xl shadow-yellow-500/10 border border-slate-800 overflow-hidden">
             {/* Header */}
             <div className="bg-yellow-500 px-6 py-3 flex items-center justify-between">
               <span className="text-slate-950 font-black text-xs uppercase tracking-widest">
-                Admission Confirmed
+                Premium Activated
               </span>
 
               <span className="text-slate-950 font-black text-xs uppercase tracking-widest">
@@ -74,12 +88,12 @@ export default async function PremiumSuccess({ searchParams }) {
               </div>
 
               <h1 className="text-2xl font-black text-white tracking-tight mb-2">
-                You're In, Premium Access
+                You're In! 🎉
               </h1>
 
               <p className="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">
-                Your pass to every premium feature on Ticketo is now active.
-                Show this confirmation anytime—it's already on file.
+                Your Premium membership has been activated successfully. You now
+                have access to all premium features on Ticketo.
               </p>
             </div>
 
@@ -94,7 +108,7 @@ export default async function PremiumSuccess({ searchParams }) {
             <div className="px-8 py-6 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 text-xs uppercase tracking-wider font-bold">
-                  Issued To
+                  Email
                 </span>
 
                 <span className="text-white text-sm font-semibold truncate max-w-[200px]">
@@ -107,8 +121,18 @@ export default async function PremiumSuccess({ searchParams }) {
                   Plan
                 </span>
 
-                <span className="text-yellow-500 text-sm font-black uppercase tracking-wide">
+                <span className="text-yellow-500 text-sm font-black uppercase">
                   Premium
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 text-xs uppercase tracking-wider font-bold">
+                  Amount
+                </span>
+
+                <span className="text-white text-sm font-semibold">
+                  ${(amount_total / 100).toFixed(2)}
                 </span>
               </div>
 
@@ -126,16 +150,16 @@ export default async function PremiumSuccess({ searchParams }) {
 
           {/* Footer */}
           <p className="text-center text-slate-500 text-xs mt-6">
-            A receipt is on its way to your inbox. Questions? Email{" "}
+            A receipt has been sent to your email. Need help? Contact{" "}
             <a
-              href="mailto:orders@example.com"
+              href="mailto:haquerahin743@gmail.com"
               className="text-yellow-500 hover:text-yellow-400 underline underline-offset-2"
             >
               haquerahin743@gmail.com
             </a>
           </p>
 
-          {/* Back button */}
+          {/* Back Button */}
           <div className="flex justify-center mt-6">
             <Link
               href="/"
@@ -149,5 +173,5 @@ export default async function PremiumSuccess({ searchParams }) {
     );
   }
 
-  return redirect("/");
+  redirect("/");
 }
