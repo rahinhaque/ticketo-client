@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
 import {
@@ -18,7 +19,7 @@ import {
   ListBox,
   ListBoxItem,
 } from "@heroui/react";
-import { FaUser, FaEnvelope, FaLock, FaImage, FaGoogle } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaLock, FaImage, FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import Logo from "@/components/Logo";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
@@ -28,6 +29,7 @@ import { redirect } from "next/navigation";
 
 
 export default function RegisterPage() {
+  const [showPassword, setShowPassword] = useState(false);
   //React Hook From for form state management---------------------------------------------------
   const {
     register,
@@ -83,7 +85,7 @@ const onSubmit = async (data) => {
         // main code ---------------------------------------------------------------------------------------------------
 
   return (
-    <div className="my-10 mx-auto">
+    <div className="my-10 mx-auto px-4">
       <Card className="w-full max-w-lg border border-white/5 bg-slate-950/70 backdrop-blur-xl shadow-2xl p-4">
         <CardHeader className="flex flex-col gap-1 items-center pb-6 text-center">
           <Logo />
@@ -174,9 +176,19 @@ const onSubmit = async (data) => {
               })}
               id="password"
               placeholder="••••••••"
-              type="password"
+              type={showPassword ? "text" : "password"}
               labelPlacement="outside"
               startContent={<FaLock className="text-slate-400 text-sm" />}
+              endContent={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="focus:outline-none text-slate-400 hover:text-white cursor-pointer"
+                  aria-label="toggle password visibility"
+                >
+                  {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                </button>
+              }
               className="w-full bg-slate-900/50 border-white/10 hover:border-pink-500/50 focus-within:!border-pink-500"
             />
 

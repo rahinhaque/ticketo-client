@@ -53,7 +53,7 @@ export default function TicketCard({
 
 
   return (
-    <div className="sticky top-6 rounded-2xl border border-white/5 bg-slate-900/60 backdrop-blur-xl shadow-2xl overflow-hidden">
+    <div className="lg:sticky lg:top-6 rounded-2xl border border-white/5 bg-slate-900/60 backdrop-blur-xl shadow-2xl overflow-hidden">
       {/* Price header */}
       <div className="bg-gradient-to-r from-pink-500/20 to-indigo-600/20 border-b border-white/5 p-6">
         <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">

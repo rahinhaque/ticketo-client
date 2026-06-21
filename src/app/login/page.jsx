@@ -1,10 +1,10 @@
 "use client";
 
-
+import { useState } from "react";
 import Link from "next/link";
 
 import { Card, CardHeader, CardContent as CardBody, Input, Button, Label, Form } from "@heroui/react";
-import { FaEnvelope, FaLock, FaGoogle } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 
 import Logo from "@/components/Logo";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
 const LoginPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
   //React Hook From for form state management---------------------------------------------------
   const {
     register,
@@ -59,7 +60,7 @@ const LoginPage = () => {
 
   // ---------------------------------------Main code---------------------------------------
   return (
-    <div className="my-10 mx-auto">
+    <div className="my-10 mx-auto px-4">
       <Card className="w-full max-w-md border border-white/5 bg-slate-950/70 backdrop-blur-xl shadow-2xl p-4">
         <CardHeader className="flex flex-col gap-1 items-center pb-6 text-center">
           <Logo />
@@ -88,9 +89,19 @@ const LoginPage = () => {
               {...register("password", { required: true })}
               id="password"
               placeholder="••••••••"
-              type="password"
+              type={showPassword ? "text" : "password"}
               labelPlacement="outside"
               startContent={<FaLock className="text-slate-400 text-sm" />}
+              endContent={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="focus:outline-none text-slate-400 hover:text-white cursor-pointer"
+                  aria-label="toggle password visibility"
+                >
+                  {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                </button>
+              }
               className="w-full bg-slate-900/50 border-white/10 hover:border-pink-500/50 focus-within:!border-pink-500"
             />
             {errors.password && <span className="text-red-500">{errors.password.message}</span>}

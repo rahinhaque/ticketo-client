@@ -4,6 +4,7 @@
 import { Button } from "@heroui/react";
 import Link from "next/link";
 import { FaRocket } from "react-icons/fa";
+import { motion } from "framer-motion";
 const Hero = () => {
     return (
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden px-6">
@@ -33,7 +34,7 @@ const Hero = () => {
                     Ticketo links passionate organizers with eager attendees. Browse local festivals, grand music nights, elite business seminars, and everything in between.
                 </p>
 
-                <div
+                <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
@@ -56,7 +57,7 @@ const Hero = () => {
                             Create Organization
                         </Button>
                     </Link>
-                </div>
+                </motion.div>
             </div>
         </section>
     );

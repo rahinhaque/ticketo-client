@@ -11,9 +11,10 @@ import {
   FaPlus,
   FaSignOutAlt,
   FaUsers,
+  FaTimes,
 } from "react-icons/fa";
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ onClose }) => {
   //Getting the role from the session
   const { data: session } = useSession();
 
@@ -111,8 +112,17 @@ const DashboardSidebar = () => {
     <aside className="w-64 h-screen border-r border-white/5">
       <div className="h-full flex flex-col bg-slate-950/80 backdrop-blur-xl">
         {/* Brand / Logo */}
-        <div className="px-6 py-5 border-b border-white/5">
+        <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between">
           <Logo />
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition focus:outline-none cursor-pointer"
+              aria-label="Close sidebar"
+            >
+              <FaTimes size={16} />
+            </button>
+          )}
         </div>
 
         {/* User Profile */}
@@ -153,6 +163,7 @@ const DashboardSidebar = () => {
               <Link
                 key={key}
                 href={href}
+                onClick={() => onClose && onClose()}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 text-left cursor-pointer
           text-slate-400 hover:text-white
           ${role === "admin" ? "hover:bg-yellow-500/10" : role === "organizer" ? "hover:bg-indigo-500/10" : "hover:bg-pink-500/10"}
@@ -175,6 +186,7 @@ const DashboardSidebar = () => {
         <div className="px-3 py-4 border-t border-white/5 space-y-1">
           <Link
             href="/"
+            onClick={() => onClose && onClose()}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150"
           >
             <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
@@ -183,7 +195,10 @@ const DashboardSidebar = () => {
             Back to Site
           </Link>
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              handleLogout();
+              onClose && onClose();
+            }}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-150 cursor-pointer"
           >
             <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">

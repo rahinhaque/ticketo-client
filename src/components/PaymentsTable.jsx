@@ -10,7 +10,7 @@ import {
   Chip
 } from "@heroui/react";
 
-const PaymentsTable = ({ payments }) => {
+const PaymentsTable = ({ payments = [] }) => {
 
 
   return (

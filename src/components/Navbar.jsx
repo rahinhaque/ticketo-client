@@ -4,7 +4,7 @@ import { signOut, useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { FaSignOutAlt, FaThLarge, FaUser } from "react-icons/fa";
+import { FaSignOutAlt, FaThLarge, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import Logo from "./Logo";
 import Image from "next/image";
 
@@ -22,6 +22,7 @@ export default function Navbar() {
   const dashboardHref =
     roleDashboardRoutes[session?.user?.role] || "/dashboard/organizer";
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -150,8 +151,46 @@ export default function Navbar() {
               )}
             </div>
           )}
+
+          {/* MOBILE MENU TOGGLE */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="sm:hidden p-2 text-slate-300 hover:text-white rounded-xl hover:bg-white/5 transition focus:outline-none cursor-pointer"
+            aria-label="Toggle mobile menu"
+          >
+            {mobileMenuOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
+          </button>
         </div>
       </div>
+
+      {/* MOBILE MENU LINKS */}
+      {mobileMenuOpen && (
+        <div className="sm:hidden mt-3 pt-3 border-t border-white/5 flex flex-col gap-3 animate-in slide-in-from-top duration-200">
+          <Link
+            href="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`text-sm font-medium transition-colors py-1.5 ${pathname === "/" ? "text-pink-500 font-semibold" : "text-slate-300 hover:text-white"}`}
+          >
+            Home
+          </Link>
+          <Link
+            href="/events"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`text-sm font-medium transition-colors py-1.5 ${pathname.startsWith("/events") ? "text-pink-500 font-semibold" : "text-slate-300 hover:text-white"}`}
+          >
+            Browse Events
+          </Link>
+          {isLoggedIn && (
+            <Link
+              href={dashboardHref}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-sm font-medium transition-colors py-1.5 ${pathname.startsWith("/dashboard") ? "text-pink-500 font-semibold" : "text-slate-300 hover:text-white"}`}
+            >
+              Dashboard
+            </Link>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

@@ -11,7 +11,7 @@ import {
   Chip
 } from "@heroui/react";
 
-const TicketsTable = ({bookings}) => {
+const TicketsTable = ({ bookings = [] }) => {
   // const tickets = [
   //   {
   //     _id: "t1",
