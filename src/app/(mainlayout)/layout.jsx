@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
-
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 import { Toaster } from "sonner";
 
 export const metadata = {
@@ -16,7 +16,9 @@ export default function RootLayout({ children }) {
         <Navbar />
 
         <main className="flex-grow flex flex-col">
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
           <Toaster
             position="top-center"
             closeButton

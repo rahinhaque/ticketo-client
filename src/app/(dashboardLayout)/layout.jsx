@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import Logo from "@/components/Logo";
+import PageTransition from "@/components/PageTransition";
 import { FaBars } from "react-icons/fa";
 
 const DashboardLayout = ({ children }) => {
@@ -23,12 +25,19 @@ const DashboardLayout = ({ children }) => {
       </div>
 
       {/* Sidebar Mobile Overlay */}
-      {sidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            key="overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar Container */}
       <div
@@ -41,7 +50,9 @@ const DashboardLayout = ({ children }) => {
 
       {/* Content Area */}
       <div className="flex-1 px-6 py-10 max-w-5xl w-full mx-auto overflow-x-hidden">
-        {children}
+        <PageTransition>
+          {children}
+        </PageTransition>
       </div>
     </div>
   );
