@@ -1,7 +1,27 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import DashboardHeading from "@/components/DashboardHeading";
-import React from "react";
+import AttendeesTable from "@/components/AttendeesTable";
+import { useSession } from "@/lib/auth-client";
+import { getAttendeeList } from "@/lib/api/attendeeList/data";
 
 const Attendee = () => {
+  const { data: session } = useSession();
+  const [attendees, setAttendees] = useState([]);
+
+  useEffect(() => {
+    async function loadAttendees() {
+      if (!session?.user?.email) return;
+
+      const data = await getAttendeeList(session.user.email);
+
+      setAttendees(data);
+    }
+
+    loadAttendees();
+  }, [session]);
+
   return (
     <div>
       <DashboardHeading
@@ -16,7 +36,9 @@ const Attendee = () => {
         }
       />
 
-      {/* Your Attendee Table / Guest List Components Will Go Here */}
+      <div>
+        <AttendeesTable Attendees={attendees} />
+      </div>
     </div>
   );
 };
